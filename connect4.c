@@ -85,7 +85,7 @@ int main(void)
     int lastx = 3;
     while(true) {
         system("clear");
-        printf("It's Player %d's turn!\n");
+        printf("It's Player %d's turn!\n", (player1)? 1 : 2);
         printmat(mat);
         lastx = getcol() + 3;
         lasty = placecoin(mat, lastx, player1);
