@@ -73,7 +73,7 @@ bool checkconnectstate(int mat[13][12], int x, int y, bool player1)
 int placecoin(int mat[13][12], int col, bool player1)
 {
     int y = 5;
-    while(!(mat[col][y] == 0 || y == 0)) --y;
+	while (!(mat[col][y] == 0 || y == 0)) --y;
     mat[col][y] = (player1)? 1 : 1000;
     return y;
 }

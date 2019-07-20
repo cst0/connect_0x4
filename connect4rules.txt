@@ -1,0 +1,26 @@
+clearegs
+
+pushregs - push eax, ebx, ecx, edx, esi, edi, clearregs
+popregs - pop edi, esi, edx, ecx, ebx, eax
+
+
+diplayscreen - 
+	drawForeground: ah x1, al y1, bh x2, bl y2
+	returns nothing
+	drawBackground: ah x1, al y1, bh x2, bl y2
+	returns nothing
+
+placeToken - ah column
+	return ah x, al y //landed
+	-1,-1 is placeToken failed
+
+drawPlacedToken - ah x, al y
+	return nothing
+
+checkWin - ah x, al y
+	return bl 0 for nothing, 1 for win
+
+getCoordinateValue - ah x, al y 
+	//takes halo into account
+	return bl 0 for nothing, 1 for player 1, 2 for player 2
+

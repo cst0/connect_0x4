@@ -1,9 +1,14 @@
 TITLE Connect 4
-
+#define 
 
 INCLUDE Irvine32.inc
 .data
-mat db 13 DUP(12 DUP(0))
+g_mat dw 13 DUP(12 DUP(0))
+g_player dw 1,1000
+g_turn db 0
+g_newMouseInterrupt db 0
+g_MouseInputColumn db 0
+
 .code
 
 main PROC	
@@ -19,6 +24,8 @@ setup:
 gamestart:
 	
 	; display grid image
+	Call DisplayGrid
+
 
 	; ask for column to drop coin
 
@@ -59,6 +66,15 @@ playagain:
 endprog:
 
 	; end of program
-
+	exit
 main ENDP
+
+;-----------------------------------------------------------;
+
+displaygrid PROC
+
+displaygrid ENDP
+
+;-----------------------------------------------------------;
+
 END main
