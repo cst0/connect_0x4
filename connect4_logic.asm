@@ -41,14 +41,37 @@ INCLUDE Irvine32.inc
 main proc
 	m_mainloop:
 		call Clrscr
+
 		call printcurrentplayer
-		call printmat
-		mov al, 3
-		mov ah, 1
-		mov bl, 1
-		call setmatval
+		mov al, 1
+		call placecoin
 		call printmat
 		inc g_turn
+
+		call printcurrentplayer
+		mov al, 1
+		call placecoin
+		call printmat
+		inc g_turn
+
+		call printcurrentplayer
+		mov al, 1
+		call placecoin
+		call printmat
+		inc g_turn
+
+		call printcurrentplayer
+		mov al, 1
+		call placecoin
+		call printmat
+		inc g_turn
+
+		call printcurrentplayer
+		mov al, 1
+		call placecoin
+		call printmat
+		inc g_turn
+	exit
 
 main endp
 
@@ -90,27 +113,26 @@ printcurrentplayer proc
 
 	printcurrentplayer_player1:
 		mov eax, 1
-		call WriteInt
+		call Writedec
 		call CRLF
 		jmp pcpdone
 	printcurrentplayer_player2:
 		mov eax, 2
-		call WriteInt
+		call Writedec
 		call CRLF
 	
 	pcpdone:
-		; This function gets on the top of the stack twice for some reason?
-		; So, pop one of those off before returning.
-		;pop eax
 		ret
 printcurrentplayer endp
 
 ;=== Get the current player
 getcurrentplayer proc
+	mov g_last_ebx, ebx
 	movsx ax, g_turn
-	mov al, 2
-	div al
-	cmp ah,0
+	mov bl, 2
+	div bl
+	mov ebx, g_last_ebx
+	cmp ah, 0
 	je getcurrentplayer_iszero
 	jmp getcurrentplayer_notzero
 
@@ -137,6 +159,7 @@ printmat proc
 		call printspace
 		printmat_printcol:
 			mov al, dl
+			mov ah, dh
 			call writeplayer
 			inc dl
 			cmp dl, g_xnbuf
@@ -155,19 +178,26 @@ printmat endp
 ;=== Writes the player at x, y in format (al, ah)
 writeplayer proc
 	call getplayer
-	call WriteInt
+	call Writedec
+	call printspace
 	ret
 writeplayer endp
 
 ;=== Gets the player at a coordinate x, y in format (al, ah)
 getplayer proc
 	call getmatval
-	cmp eax, 0
+	cmp al, 0
 	je getplayer_iszero
-	cmp eax, 1
+	cmp al, 1
 	je getplayer_isone
-	cmp eax, 1000
+	cmp al, 232 ; the al portion of 1000
 	je getplayer_isonek
+
+	; We're comparing against 'al', so this just checks if there's any runover.
+;	cmp al, 3
+;	je getplayer_iszero
+;	cmp al, 4
+;	je getplayer_isone
 
 	mov eax, -1
 	ret
@@ -209,7 +239,7 @@ getmatval proc
 	ret
 getmatval endp
 
-;=== Sets an x, y value in the format (al, ah) where bl is the value to set to
+;=== Sets an x, y value in the format (al, ah) where bl is the player to set to
 setmatval proc
 	mov g_last_ebp, ebp
 	mov g_last_esi, esi
@@ -226,7 +256,29 @@ setmatval proc
 	mov ebp, offset mainarr
 	add ebp, esi
 	add ebp, eax
-	movzx ebx, bl
+
+	cmp bl, 1
+	je setmatval_playerone
+	cmp bl, 2
+	je setmatval_playertwo
+	cmp bl, 0
+	je setmatval_playernone
+	
+	mov ebx, -1
+	jmp setmatval_done
+
+	setmatval_playerone:
+		mov ebx, 1
+		jmp setmatval_done
+	setmatval_playertwo:
+		mov ebx, 232
+		jmp setmatval_done
+	setmatval_playernone:
+		mov ebx, 0
+		jmp setmatval_done
+
+
+	setmatval_done:
 	mov [ebp], ebx
 
 	mov ebp, g_last_ebp
@@ -314,8 +366,45 @@ binarycheck proc
 		ret
 binarycheck endp
 
-;=== Places the coin in the right part of the column according to 'gravity'
+;=== Places the coin in the right part of the column (al) according to 'gravity'
 placecoin proc
+	mov g_last_ebx, ebx
+	mov g_last_ecx, ecx
+
+	mov ecx, 0
+	placecoin_findcoinloop:
+		mov ah, ch
+
+		call writehex
+		call CRLF
+
+		mov ebx, eax
+		call getplayer
+		cmp eax, 0
+		je placecoin_notfilled
+
+		inc ch
+		cmp ch, 6
+		je placecoin_maxedout
+
+		jmp placecoin_findcoinloop
+
+	placecoin_maxedout:
+		mov ah, -1
+		mov ebx, g_last_ebx
+		mov ecx, g_last_ecx
+		ret
+	placecoin_notfilled:
+		; We have an empty spot, let's fill it
+		mov g_last_eax, ebx
+		;call getcurrentplayer		; dumps the current player into al
+		;mov bl, al
+		mov bl, 1
+		mov eax, g_last_eax
+		call setmatval
+
+	mov ebx, g_last_ebx
+	ret
 placecoin endp
 
 ;=== Get where the user wants to place a coin via text input, to be substituted by mouse input later
