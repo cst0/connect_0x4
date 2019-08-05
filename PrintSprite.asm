@@ -37,6 +37,7 @@ ps_y db 0
 
 pb_loop db 0
 
+pg_startingrow db 0
 .code
 
 main PROC	
@@ -46,7 +47,9 @@ main PROC
 	mov edx, 0
 
 	Call initSprites
-	
+	call printbarright
+	call printbarleft
+	call printgrid
 	mov edx, 0
 loopem:
 	Call ReadInt
@@ -154,38 +157,120 @@ printBarRight PROC
 	push esi
 	push edi
 
-	mov ecx, 0
+	mov eax, yellow
+	call setTextColor
+
+	mov eax, 0
 	mov ebx, 0
+	mov ecx, 0
 	mov edx, 0
-	mov dh, g_slotrows
 	mov esi, offset g_barright
-	mov al, 7
-	mov cl, g_barcolumns
-	mov bl, g_barrows
+	
+	mov al, g_slotcolumns
+	mov bl, 7
 	mul bl
-	xchg eax, ecx
+	add al, g_barcolumns
+	mov dl, al
+
+	mov dh, g_slotrows
+	mov eax, 7
+	mov cl, g_barcolumns
+	mov bl, g_slotrows
+	mul bl
+	mov bl, g_barrows
+	mov pb_loop, al
+	xchg pb_loop, cl
 pbr_sideloop:
-	xchg eax, ecx
+	xchg pb_loop, cl
 	call PrintSprite
 	inc dh
-	xchg eax, ecx
+	xchg pb_loop, cl
 	Loop pbr_sideloop
+	
+	mov eax, white
+	call setTextColor
 
-	push edi
-	push esi
-	push edx
-	push ecx
-	push ebx
-	push eax
+	pop edi
+	pop esi
+	pop edx
+	pop ecx
+	pop ebx
+	pop eax
 	ret
 printbarRight endp
 
 printbarLeft PROC
+	push eax
+	push ebx
+	push ecx
+	push edx
+	push esi
+	push edi
+
+	mov eax, yellow
+	call setTextColor
+
+	mov eax, 0
+	mov ebx, 0
+	mov ecx, 0
+	mov edx, 0
+	mov esi, offset g_barleft
+	
+	mov dh, g_slotrows
+	mov eax, 7
+	mov cl, g_barcolumns
+	mov bl, g_slotrows
+	mul bl
+	mov bl, g_barrows
+	mov pb_loop, al
+	xchg pb_loop, cl
+pbl_sideloop:
+	xchg pb_loop, cl
+	call PrintSprite
+	inc dh
+	xchg pb_loop, cl
+	Loop pbl_sideloop
+	
+	mov eax, white
+	call setTextColor
+
+	pop edi
+	pop esi
+	pop edx
+	pop ecx
+	pop ebx
+	pop eax
 	ret
 printbarLeft ENDP
 
 
 PrintGrid PROC
+	push ebx
+	push ecx
+	push edx
+	mov edx, 0
+	add dl, g_barcolumns
+	add dh, g_slotrows
+	mov ecx, 7
+	mov ebx, 7
+	mov pg_startingrow, dl
+pg_startall:
+	dec bl
+	cmp bl, 0
+	jle pg_done
+pg_loop:
+	Call PrintTokenSlot
+	add dl, g_slotcolumns
+	Loop pg_loop
+
+	add dh, g_slotrows
+	mov dl, pg_startingrow
+	mov ecx, 7
+	jmp pg_startall 
+pg_done:
+	pop edx
+	pop ecx
+	pop ebx
 	ret
 PrintGrid endp
 
@@ -330,15 +415,15 @@ convertquartersprite endp
 
 
 printSprite PROC
-	;cl has columns
 	;bl has rows
-	;esi has total image
+	;cl has columns
 	;dh has current row, dl has current column
-	
-	push ecx
+	;esi has total image
+	push eax
 	push ebx
-	push esi
+	push ecx
 	push edx
+	push esi
 
 	mov ps_x, dl
 	mov ps_y, dh
@@ -369,11 +454,11 @@ ps_dontprint:
 ps_endprint:
 	mov edx,0
 	Call gotoXY
-	
-	pop edx
 	pop esi
-	pop ebx
+	pop edx
 	pop ecx
+	pop ebx
+	pop eax
 	
 	ret
 printSprite endp
@@ -472,3 +557,17 @@ cs_doneall:
 ClearSprite ENDP
 
 END main
+        no_mouse:
+    .ENDW
+
+    lea edx, Msg2
+    Call WriteString
+
+    done:
+    mov eax, ConsoleMode
+    invoke SetConsoleMode, hStdIn, eax
+    call ReadChar
+    invoke ExitProcess, 0
+main ENDP
+
+end main
