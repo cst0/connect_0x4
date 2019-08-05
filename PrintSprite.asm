@@ -35,6 +35,7 @@ ps_columns db 0
 ps_x db 0
 ps_y db 0
 
+pb_loop db 0
 
 .code
 
@@ -122,13 +123,13 @@ is_fillBarRight:
 InitSprites ENDP
 
 PrintTokenSlot PROC
+	;dh has current row, dl has current column
 	push esi
 	push ebx
 	push ecx
 	push eax
 	mov eax, yellow
 	call setTextColor
-	;dh has current row, dl has current column
 	mov esi, offset g_tokenslot
 	mov ebx, 0
 	mov bl, g_slotrows
@@ -145,8 +146,53 @@ PrintTokenSlot PROC
 PrintTokenSlot endp
 
 
+printBarRight PROC
+	push eax
+	push ebx
+	push ecx
+	push edx
+	push esi
+	push edi
+
+	mov ecx, 0
+	mov ebx, 0
+	mov edx, 0
+	mov dh, g_slotrows
+	mov esi, offset g_barright
+	mov al, 7
+	mov cl, g_barcolumns
+	mov bl, g_barrows
+	mul bl
+	xchg eax, ecx
+pbr_sideloop:
+	xchg eax, ecx
+	call PrintSprite
+	inc dh
+	xchg eax, ecx
+	Loop pbr_sideloop
+
+	push edi
+	push esi
+	push edx
+	push ecx
+	push ebx
+	push eax
+	ret
+printbarRight endp
+
+printbarLeft PROC
+	ret
+printbarLeft ENDP
+
+
+PrintGrid PROC
+	ret
+PrintGrid endp
+
+
 
 ClearTokenSlot PROC
+	;dh has current row, dl has current column
 	push ebx
 	push ecx
 	mov ebx, 0
@@ -162,6 +208,7 @@ ClearTokenSlot endp
 
 
 PrintToken PROC
+	;dh has current row, dl has current column
 	push esi
 	push ebx
 	push ecx
@@ -187,7 +234,7 @@ PrintToken endp
 
 
 ClearToken PROC
-	
+	call ClearTokenslot
 	ret
 ClearToken endp
 
