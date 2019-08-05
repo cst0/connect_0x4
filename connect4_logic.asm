@@ -5,7 +5,7 @@ INCLUDE GraphWin.inc
 
 ;==================== DATA =======================
 .data
-	mainarr dw 156 DUP(0)
+	mainarr dw 164 DUP(0)
 	g_xvals db 13
 	g_yvals db 12
 	g_xnbuf db 7
@@ -76,6 +76,9 @@ INCLUDE GraphWin.inc
 	ps_x db 0
 	ps_y db 0
 
+	g_point_x db 0
+	g_point_y db 0
+
 	pb_loop db 0
 
 	pg_startingrow db 0
@@ -143,6 +146,8 @@ main PROC
 
         jz endloop_justmove
 
+		mov g_point_x, al
+		mov g_point_y, ah
 		call calculatecolumn
 		cmp al, -1
 		je m_flagval
@@ -153,9 +158,8 @@ main PROC
 
 		mov dl, g_coordy
 		mov dh, g_coordx
-		mov al, dh
-		mov ah, dl
 		call convertrowcol
+		mov edx, eax
 		call printtoken
 		call printtokenslot
 		call writehex
@@ -205,17 +209,35 @@ main PROC
 main ENDP
 
 ConvertRowCol PROC
-    push ebx
-    push ecx
-    push edx
-    mov edx, 0
-    push eax
+    ;push ebx
+    ;push ecx
+    ;push edx
+    ;mov edx, 0
+    ;push eax
+
+	mov al, g_coordy
+	mov bl, 12
+	mul bl
+	add al, g_barcolumns
+	mov cl, al
+
+	mov al, g_coordx
+	neg al
+	mov bl, 6
+	add al, 6-1
+	mul bl
+	add al, 6
+	mov ch, al
+
+	mov eax, ecx
+	ret
     
     ;max
     push eax
     mov eax, 0
     mov al, g_slotrows
     mov bl, 6
+	mul bl
     mov ecx, eax    
     pop eax
     
