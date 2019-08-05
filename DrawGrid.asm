@@ -16,7 +16,7 @@ INCLUDE Irvine32.inc
 		db 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178
 	
 		; values used for loops in procedures
-		; all dd, easier to load with ecx for looping
+		; all dd, easier to load with ecx for looping (since ecx is a 32 bit register)
 	lenbarw dd 8		; width of bar
 	lenbard dd 56		; height of bar (8 pixels each, 7 times, accounting for extra row for stand)
 	
