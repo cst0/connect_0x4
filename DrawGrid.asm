@@ -135,6 +135,7 @@ printline PROC		; print an individual line of characters, auxiliary procedure
 		mov al, [esi]
 		call Writechar
 		inc esi
+		
 		loop print
 
 	ret
