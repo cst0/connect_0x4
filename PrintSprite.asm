@@ -3,53 +3,194 @@ TITLE PrintSprite
 ; Eric Scherfling
 
 INCLUDE Irvine32.inc
+
 .data
-mymessage1 db 4,3,3,3,4,1,3,1,1
-mymessage2 db 36 DUP(0)
-mymessage3 db 72 DUP(0)
-ps_int db 0
+cqs_slotslice db 4,3,3,3,4,1,3,1,1
+cqs_tokenslice db 1,3,3,3,3,3,3,3,4 
+cqs_slotslicex db 3
+cqs_slotslicey db 3
 cqs_rows db 0
 cqs_columns db 0
 cqs_slice dd 0
+
+ca_slotraw db 36 DUP(0)
+ca_tokenraw db 36 DUP(0)
+ca_barleftRaw db 2,3,4,4
+ca_barRightRaw db 4 Dup(0)
+
+g_token db 72 DUP(0)
+g_tokenslot db 72 DUP(0)
+g_slotrows db 6
+g_slotcolumns db 12
+
+g_barRight db 8 Dup(0)
+g_barLeft db 8 Dup(0)
+
+g_barRows db 1
+g_barcolumns db 8
+
+ps_int db 0
+ps_rows db 0
+ps_columns db 0
+ps_x db 0
+ps_y db 0
+
+
 .code
 
 main PROC	
-
 	mov eax, 0
 	mov ebx, 0
 	mov ecx, 0
 	mov edx, 0
 
-	mov esi, offset mymessage1
-	mov edi, offset mymessage2
-	mov bl, 3
-	mov bh, 3
-	Call convertquartersprite
-
-
-	mov edi, Offset mymessage2
-	mov esi, Offset mymessage3
-	mov ecx, lengthof mymessage2
-	Call changearray
-	mov esi, offset myMessage3
-	mov ebx, 6
-	mov ecx, 12
+	Call initSprites
+	
 	mov edx, 0
 loopem:
 	Call ReadInt
 	mov dl, al
 	Call ReadInt
 	mov dh, al	
-	mov ebx, 6
-	mov ecx, 12
-	mov esi, offset myMessage3
-	Call printSprite
-
+	Call printToken
+	mov eax, 1000
+	Call Delay
+	Call printTokenSlot
+	Call Delay
+	Call clearTokenSlot
 	jmp loopem
 
 endProgram:
 	exit
 main ENDP
+
+InitSprites PROC
+	push eax
+	push ebx
+	push ecx
+	push edx
+	push esi
+	push edi
+	mov ecx, lengthof ca_barleftraw
+	mov esi, offset ca_barLeftraw
+	mov edi, offset ca_barRightraw
+	add edi, ecx
+	dec edi
+is_fillBarRight:
+	mov al, [esi]
+	mov [edi], al
+	inc esi
+	dec edi
+	Loop is_fillBarRight
+
+	mov esi, offset cqs_tokenslice
+	mov edi, offset ca_tokenRaw
+	mov bl, cqs_slotslicey
+	mov bh, cqs_slotslicex
+	Call convertquartersprite
+	mov esi, Offset ca_tokenRaw
+	mov edi, Offset g_token
+	mov ecx, lengthof ca_tokenRaw
+	Call changearray
+
+	mov esi, offset cqs_slotslice
+	mov edi, offset ca_slotraw
+	Call convertquartersprite
+	mov esi, Offset ca_slotraw
+	mov edi, Offset g_tokenslot
+	mov ecx, lengthof ca_slotraw
+	Call changearray
+
+
+	mov esi, Offset ca_barRightraw
+	mov edi, Offset g_barRight
+	mov ecx, lengthof ca_barRightraw
+	Call changearray
+
+	mov esi, Offset ca_barleftraw
+	mov edi, Offset g_barleft
+	mov ecx, lengthof ca_barleftraw
+	Call changearray
+	
+	pop edi
+	pop esi
+	pop edx
+	pop ecx
+	pop ebx
+	pop eax
+	ret
+InitSprites ENDP
+
+PrintTokenSlot PROC
+	push esi
+	push ebx
+	push ecx
+	push eax
+	mov eax, yellow
+	call setTextColor
+	;dh has current row, dl has current column
+	mov esi, offset g_tokenslot
+	mov ebx, 0
+	mov bl, g_slotrows
+	mov ecx, 0
+	mov cl, g_slotcolumns
+	Call PrintSprite
+	mov eax, white
+	call setTextColor
+	pop eax
+	pop ecx
+	pop ebx
+	pop esi
+	ret
+PrintTokenSlot endp
+
+
+
+ClearTokenSlot PROC
+	push ebx
+	push ecx
+	mov ebx, 0
+	mov bl, g_slotrows
+	mov ecx, 0
+	mov cl, g_slotcolumns
+	Call clearSprite
+	pop ecx
+	pop ebx
+	ret
+ClearTokenSlot endp
+
+
+
+PrintToken PROC
+	push esi
+	push ebx
+	push ecx
+	push eax
+	mov eax, red
+	call setTextColor
+	;dh has current row, dl has current column
+	mov esi, offset g_token
+	mov ebx, 0
+	mov bl, g_slotrows
+	mov ecx, 0
+	mov cl, g_slotcolumns
+	Call PrintSprite
+	mov eax, white
+	call setTextColor
+	pop eax
+	pop ecx
+	pop ebx
+	pop esi
+	ret
+PrintToken endp
+
+
+
+ClearToken PROC
+	
+	ret
+ClearToken endp
+
 
 
 convertquartersprite PROC
@@ -59,6 +200,13 @@ convertquartersprite PROC
 	
 	; dl will be row counter, dh will be column counter
 	
+	push eax
+	push ebx
+	push ecx
+	push edx
+	push esi
+	push edi
+
 	mov cqs_slice, esi
 	mov ecx, 0
 	mov cl, bl
@@ -124,81 +272,156 @@ mov al, [esi]
 	pop eax
 	mov dl, 0
 	Loop cqs_loopDownLeft
+	pop edi
+	pop esi
+	pop edx
+	pop ecx
+	pop ebx
+	pop eax
 	ret
 convertquartersprite endp
 
 
 printSprite PROC
-	;ebx has columns
-	;ecx has rows
+	;cl has columns
+	;bl has rows
 	;esi has total image
-	;edh has current column, edl has current row
-	mov edi, Offset ps_int
-	mov [edi], ecx
+	;dh has current row, dl has current column
+	
+	push ecx
+	push ebx
+	push esi
+	push edx
+
+	mov ps_x, dl
+	mov ps_y, dh
+	mov ps_int, cl
+	mov ps_rows, dl
+	mov ps_columns, dh
 ps_startall:
 	Call gotoXY
-	dec ebx
-	inc dh
-	cmp ebx, 0
+	dec bl
+	cmp bl, 0
 	jl ps_endprint
+
 ps_printloop:
-	mov eax, [esi]
+	mov al, [esi]
+	inc dl
+	cmp al, 32
+	je ps_dontprint
 	Call WriteChar
+ps_dontprint:
+	Call gotoxy
 	inc esi
 		loop ps_printloop
-	
-	mov eax, 13
-	call writechar
-	mov eax, 10
-	call writechar
-	mov ecx, [edi]
+	mov dl, ps_x
+	inc dh
+	call gotoxy
+	mov cl, ps_int
 	jmp ps_startall
 ps_endprint:
 	mov edx,0
 	Call gotoXY
+	
+	pop edx
+	pop esi
+	pop ebx
+	pop ecx
+	
 	ret
 printSprite endp
 
 
 changeArray PROC
+	;esi has source
+	;edi has destination
+	;ecx has size of array
+	push eax
+	push ebx
+	push ecx
+	push edx
+	push esi
+	push edi
 ca_start:
-	mov bl, [edi]
+	mov bl, [esi]
 	mov dl, 1
-	cmp [edi],dl
+	cmp [esi],dl
 	jne ca_d1
 	mov bl, 32
 	jmp ca_doneloop
 ca_d1:
 	mov dl, 2
-	cmp [edi], dl
+	cmp [esi], dl
 	jne ca_d2
 	mov bl, 176
 	jmp ca_doneloop
 ca_d2:
 	mov dl, 3
-	cmp [edi], dl
+	cmp [esi], dl
 	jne ca_d3
 	mov bl, 177
 	jmp ca_doneloop
 ca_d3:
 	mov dl, 4
-	cmp [edi], dl
+	cmp [esi], dl
 	jne ca_d4
 	mov bl, 178
 	jmp ca_doneloop
 ca_d4:
 	mov dl, 5
-	cmp [edi], dl
+	cmp [esi], dl
 	jne ca_doneloop
 	mov bl, 219
 ca_doneloop:
-	mov [esi], bl
-	inc esi
-	mov [esi], bl
-	inc esi
+	mov [edi], bl
 	inc edi
+	mov [edi], bl
+	inc edi
+	inc esi
 	loop ca_start
+
+	pop edi
+	pop esi
+	pop edx
+	pop ecx
+	pop ebx
+	pop eax
 	ret
 changeArray endp
+
+ClearSprite PROC
+	;dh has current row, dl has current column
+	;bh has num row, bl has numcolumn
+	push edx
+	push ebx
+	push ecx
+	push eax
+	
+	mov bh, cl
+	mov ecx, 0
+	mov eax, 32
+	Call gotoxy
+cs_startall:
+	mov cl, bh
+	dec bl
+	cmp bl, 0
+	jl cs_doneall
+
+cs_printloop:
+	Call WriteChar
+	Loop cs_printLoop
+	
+	inc dh
+	Call gotoxy
+	jmp cs_startall
+cs_doneall:
+	mov edx,0
+	Call gotoxy
+	pop eax
+	pop ecx
+	pop ebx
+	pop edx
+	ret
+ClearSprite ENDP
 
 END main
