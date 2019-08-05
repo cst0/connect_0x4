@@ -1,6 +1,7 @@
-TITLE connect4_logic
+TITLE Template
 
 INCLUDE Irvine32.inc
+INCLUDE GraphWin.inc
 
 ;==================== DATA =======================
 .data
@@ -53,87 +54,81 @@ INCLUDE Irvine32.inc
 	printmatheader db "  0 1 2 3 4 5 6", 13, 10, 0
 	printmatbar db" ----------------", 13, 10, 0
 	youwonstring db "Player won!", 13, 10, 0
+	invalidclick db "Invalid click location!", 13, 10, 0
+
+	hStdIn    dd 0
+    nRead     dd 0
+
+    _INPUT_RECORD STRUCT
+        EventType   WORD ?
+        WORD ?                    ; For alignment
+        UNION
+            KeyEvent              KEY_EVENT_RECORD          <>
+            MouseEvent            MOUSE_EVENT_RECORD        <>
+            WindowBufferSizeEvent WINDOW_BUFFER_SIZE_RECORD <>
+            MenuEvent             MENU_EVENT_RECORD         <>
+            FocusEvent            FOCUS_EVENT_RECORD        <>
+          ENDS
+    _INPUT_RECORD ENDS
+
+    InputRecord _INPUT_RECORD <>
+
+    ConsoleMode dd 0
 
 ;=================== CODE =========================
 .code
-main proc
+main PROC
+
+	; Mouse interaction was informed by https://stackoverflow.com/questions/33973305,
+	; modified to give an x/y coordinate and integrated into the whole program.
+    invoke GetStdHandle,STD_INPUT_HANDLE
+    mov   hStdIn,eax
+
+    invoke GetConsoleMode, hStdIn, ADDR ConsoleMode
+    mov eax, 0090h          ; ENABLE_MOUSE_INPUT | DISABLE_QUICK_EDIT_MODE | ENABLE_EXTENDED_FLAGS
+    invoke SetConsoleMode, hStdIn, eax
+
 	m_mainloop:
-		call Clrscr
+        invoke ReadConsoleInput,hStdIn,ADDR InputRecord,1,ADDR nRead
+		mov al, g_playerwon
+		cmp al, 0
+		jne done
 
-		call printcurrentplayer
-		mov al, 1
+        movzx  eax,InputRecord.EventType
+        cmp eax, MOUSE_EVENT
+        jne endloop
+        mov eax, InputRecord.MouseEvent.dwMousePosition
+        test InputRecord.MouseEvent.dwButtonState, 1
+
+        jz endloop
+
+		call calculatecolumn
+		cmp al, -1
+		je m_flagval
+
 		call placecoin
+		cmp al, -1
+		je m_flagval
+
 		call printmat
 		inc g_turn
+		jmp endloop
 
-		call printcurrentplayer
-		mov al, 2
-		call placecoin
-		call printmat
-		inc g_turn
+		m_flagval:
+			mov edx, offset invalidclick
+			call writestring
 
-		call printcurrentplayer
-		mov al, 2
-		call placecoin
-		call printmat
-		inc g_turn
+        endloop:
+    jmp m_mainloop
 
-		call printcurrentplayer
-		mov al, 3
-		call placecoin
-		call printmat
-		inc g_turn
-
-		call printcurrentplayer
-		mov al, 3
-		call placecoin
-		call printmat
-		inc g_turn
-
-		call printcurrentplayer
-		mov al, 4
-		call placecoin
-		call printmat
-		inc g_turn
-
-		call printcurrentplayer
-		mov al, 3
-		call placecoin
-		call printmat
-		inc g_turn
-
-		call printcurrentplayer
-		mov al, 4
-		call placecoin
-		call printmat
-		inc g_turn
-
-		call printcurrentplayer
-		mov al, 5
-		call placecoin
-		call printmat
-		inc g_turn
-
-		call printcurrentplayer
-		mov al, 4
-		call placecoin
-		call printmat
-		inc g_turn
-
-		call printcurrentplayer
-		mov al, 4
-		call placecoin
-		call printmat
-		inc g_turn
-
-		movzx eax, g_playerwon
-		mov edx, offset youwonstring
-		call writedec
-		call writestring
-
-	exit
-
-main endp
+    done:
+	mov edx, offset youwonstring
+	call writestring
+    mov eax, ConsoleMode
+    invoke SetConsoleMode, hStdIn, eax
+    call ReadChar
+    invoke ExitProcess, 0
+main ENDP
 
 ;=== For the sake of easy debug, print the current player
 printcurrentplayer proc
@@ -399,9 +394,6 @@ docheckmath proc
 	movzx eax, calc_zerothree
 	add calc_sum, eax
 	mov eax, calc_sum
-
-	call writedec
-	call crlf
 	 
 	call binarycheck
 	ret
@@ -669,6 +661,26 @@ binarycheck proc
 		ret
 binarycheck endp
 
+calculatecolumn proc
+	cmp al, 8			; Account for the left side bar
+	jle calculatecolumn_ignore
+	
+	sub al, 8
+	cmp al, 84		; Make sure it's not bigger than 12 columns, 7 characters wide
+	jge calculatecolumn_ignore
+
+	movzx ax, al
+	mov cl, 12			; Each column is 12 characters wide, get ready to divide by that amount
+	div cl
+	movzx eax, al
+	; column is now in al
+	ret
+	calculatecolumn_ignore:
+		mov al, -1
+		ret
+ret
+calculatecolumn endp
+
 ;=== Places the coin in the right part of the column (al) according to 'gravity'
 ;=== If this led to a connect 4 state, dl will be 1, 0 otherwise
 placecoin proc
@@ -678,9 +690,6 @@ placecoin proc
 	mov ecx, eax
 	placecoin_findcoinloop:
 		mov ah, ch
-
-		call writehex
-		call CRLF
 
 		mov ebx, eax
 		call getplayer
