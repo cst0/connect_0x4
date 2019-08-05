@@ -57,10 +57,13 @@ printspace PROC		; print the entire space, might want to add more or less
 	mov dl, 8
 	mov dh, strtheight
 	call printbar
-	mov dl, lenbar + 8
+	mov dl, lenbar
+	add dl, 8
 	mov dh, strtheight
 	call printgrid
-	mov dl, lenbar + lenrow + 8
+	mov dl, lenbar
+	add dl, lenrow 
+	add dl, 8
 	mov dh, strtheight
 	call printbar
 	call crlf
