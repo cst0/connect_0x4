@@ -1,6 +1,7 @@
 TITLE DrawGrid					(DrawGrid.asm)
 
 INCLUDE Irvine32.inc	
+
 .data
 		; define bars on side of board
 	g_bar db 56 DUP(8 DUP(178))
@@ -22,6 +23,7 @@ INCLUDE Irvine32.inc
 	lendown dd 8
 
 .code
+
 
 main PROC	; testing procedure
 	
@@ -64,6 +66,7 @@ printgrid PROC		; print all of the slots, individually
 		mov ecx, 7
 		push dx
 		mov ebp, esp
+		
 		gridwidth:
 
 			push ecx
@@ -73,6 +76,7 @@ printgrid PROC		; print all of the slots, individually
 			pop ecx
 
 			loop gridwidth
+			
 		xchg esp, ebp
 		pop dx
 		add dh, 8
@@ -83,10 +87,12 @@ printgrid PROC		; print all of the slots, individually
 	ret
 printgrid ENDP
 
+
 printbar PROC		; print the bar that will appear on either side of the grid
 	
 	mov esi, offset g_bar
 	mov ecx, lenbard 
+	
 	bheight:
 
 		call gotoxy
@@ -101,10 +107,12 @@ printbar PROC		; print the bar that will appear on either side of the grid
 	ret
 printbar ENDP
 
+
 printslot PROC		; procedure for each individual slot
 	
 	mov esi, offset g_tokenslot
 	mov ecx, lendown
+	
 	sheight:
 
 		call gotoxy
@@ -119,6 +127,7 @@ printslot PROC		; procedure for each individual slot
 	ret
 printslot ENDP
 
+
 printline PROC		; print an individual line of characters, auxiliary procedure
 	
 	print: 
@@ -131,10 +140,12 @@ printline PROC		; print an individual line of characters, auxiliary procedure
 	ret
 printline ENDP
 
+
 ;setwindow PROC		; will want to implement, set window size
 
 	;ret
 ;setwindow ENDP
+
 
 	; from push/pop functions
 clearregs PROC		; clear the general purpose registers
@@ -148,5 +159,6 @@ clearregs PROC		; clear the general purpose registers
 
 	ret
 clearregs ENDP
+
 
 END main
