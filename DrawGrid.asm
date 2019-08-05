@@ -57,9 +57,19 @@ main ENDP
 ;	procedures	   ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 printspace PROC		; print the entire space, might want to add more or less
-	
-	;call setwindow
+			; parameters/inputs:
+			;	none
+			; sets:
+			;	dx -> for coordinates (call gotoxy)
+			; calls:
+			;	printbar (2x) -> included function, prints a bar
+			;	printgrid -> included function, prints out a 7*6 grid
+			;	crlf -> prints a new line
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;		
+	; call setwindow
 	mov dl, 8				; set start width, from border of window
 	mov dh, strtheight			; set start heigth, will remain constant for each
 	call printbar				; first draw leftmost bar
@@ -77,8 +87,18 @@ printspace PROC		; print the entire space, might want to add more or less
 	ret
 printspace ENDP
 
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 printgrid PROC		; print all of the slots, individually
+			; parameters/inputs:
+			;	dx (dx: dl -> x, dh -> y) as coordinates
+			; sets:
+			;	ecx -> multiples times as a counter for loops
+			;	esp -> stack pointer -> holds ecx value, dx value
+			;	ebp -> stack frame pointer -> holds the second value ecx holds (second counter)
+			;	dx -> changes pixel location for iteration
+			; calls:
+				printslot -> print an individual slot
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	
 	mov ecx, gridh				; grid height counter in loop, print for 6 tall
 	gridheight:
@@ -109,8 +129,18 @@ printgrid PROC		; print all of the slots, individually
 printgrid ENDP
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 printbar PROC		; print the bar that will appear on either side of the grid
-	
+			; parameters/inputs:
+			;	dx (dx: dl -> x, dh -> y) as coordinates
+			; sets:
+			;	esi -> offset of array to print bar
+			;	ecx -> counter, resest with a push
+			;	esp -> stack to hold counter value
+			;	dx -> sets pixel location for line to draw
+			; calls:
+			;	printline -> prints out a line of characters
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 	mov esi, offset g_bar			; our array to build our bar, offset for loop
 	mov ecx, lenbard 			; we know we will be looping down a certain distance
 	
@@ -129,8 +159,18 @@ printbar PROC		; print the bar that will appear on either side of the grid
 printbar ENDP
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 printslot PROC		; procedure for each individual slot
-	
+			; parameters/inputs:
+			;	dx (dx: dl -> x, dh -> y) as coordinates
+			; sets:
+			;	esi -> offset of array to print a token slot
+			;	ecx -> counter for loop
+			;	esp -> store value of ecx
+			;	dx -> set coordinates after each loop to point to where to print next
+			; calls:
+			;	printline -> print a single line of characters
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 	mov esi, offset g_tokenslot		; our array to build tokens, cool
 	mov ecx, lendown			; loop for height of a single token
 	
@@ -149,8 +189,17 @@ printslot PROC		; procedure for each individual slot
 printslot ENDP
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 printline PROC		; print an individual line of characters, auxiliary procedure
-	
+			; parameters/inputs:
+			;	ecx -> counter for looping
+			;	esi -> offset of line to be printed
+			; sets:
+			;	al -> character to be written
+			;	esi -> increments pointer
+			; calls: 
+			;	Writechar -> print out a single character
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;		
 	print: 
 
 		mov al, [esi]			; mov our current ascii value into al, for Writechar
