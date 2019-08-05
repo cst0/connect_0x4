@@ -162,7 +162,6 @@ main PROC
 		mov edx, eax
 		call printtoken
 		call printtokenslot
-		call writehex
 
 		inc g_turn
 		jmp endloop
