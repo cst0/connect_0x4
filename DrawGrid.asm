@@ -18,10 +18,22 @@ INCLUDE Irvine32.inc
 		; values used for loops in procedures
 	lenbarw dd 8
 	lenbard dd 56
-	lenrow dd 112
+	
 	lentoken dd 16
 	lendown dd 8
-
+	
+	gridw dd 7
+	gridh dd 6
+	
+		; values for coordinates
+	lenrow db 112
+	lendowndb db 8
+	lenbar db 8
+	tknwidth db 16
+	
+	strtheight db 8
+	pixel db 1
+	
 .code
 
 
@@ -43,13 +55,13 @@ printspace PROC		; print the entire space, might want to add more or less
 	
 	;call setwindow
 	mov dl, 8
-	mov dh, 8
+	mov dh, strtheight
 	call printbar
-	mov dl, 16
-	mov dh, 8
+	mov dl, lenbar + 8
+	mov dh, strtheight
 	call printgrid
-	mov dl, 128
-	mov dh, 8
+	mov dl, lenbar + lenrow + 8
+	mov dh, strtheight
 	call printbar
 	call crlf
 
@@ -59,11 +71,11 @@ printspace ENDP
 
 printgrid PROC		; print all of the slots, individually
 	
-	mov ecx, 6
+	mov ecx, gridh
 	gridheight:
 		
 		push ecx
-		mov ecx, 7
+		mov ecx, gridw
 		push dx
 		mov ebp, esp
 		
@@ -71,15 +83,15 @@ printgrid PROC		; print all of the slots, individually
 
 			push ecx
 			call printslot
-			add dl, 16
-			sub dh, 8
+			add dl, tknwidth
+			sub dh, lendowndb
 			pop ecx
 
 			loop gridwidth
 			
 		xchg esp, ebp
 		pop dx
-		add dh, 8
+		add dh, lendowndb
 		pop ecx
 
 		loop gridheight
@@ -99,7 +111,7 @@ printbar PROC		; print the bar that will appear on either side of the grid
 		push ecx
 		mov ecx, lenbarw
 		call printline
-		add dh, 1
+		add dh, pixel
 		pop ecx
 
 		loop bheight
@@ -119,7 +131,7 @@ printslot PROC		; procedure for each individual slot
 		push ecx
 		mov ecx, lentoken
 		call printline
-		add dh, 1
+		add dh, pixel
 		pop ecx
 
 		loop sheight
