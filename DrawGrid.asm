@@ -2,8 +2,9 @@ TITLE DrawGrid					(DrawGrid.asm)
 
 INCLUDE Irvine32.inc	
 .data
-	
+		; define bars on side of board
 	g_bar db 56 DUP(8 DUP(178))
+		; define space for each slot within the board
 	g_tokenslot db 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178
 		db 178, 178, 178, 178, 32, 32, 32, 32, 32, 32, 32, 32, 178, 178, 178, 178
 		db 178, 178, 178, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 178, 178, 178
@@ -12,8 +13,8 @@ INCLUDE Irvine32.inc
 		db 178, 178, 178, 32 ,32 ,32 ,32 ,32 ,32 ,32 ,32 ,32 ,32, 178, 178, 178
 		db 178, 178, 178, 178, 32, 32, 32, 32, 32, 32, 32, 32, 178, 178, 178
 		db 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178
-	g_space db 84 DUP(32)
 	
+		; values used for loops in procedures
 	lenbarw dd 8
 	lenbard dd 56
 	lenrow dd 112
@@ -22,18 +23,23 @@ INCLUDE Irvine32.inc
 
 .code
 
-main PROC	; will need to change name, make portable procedure
-			; or for testing purposes only
+main PROC	; testing procedure
 	
 	call clearregs
-
 	call printspace
+	;call printbar
+	;call printslot
 
 	exit
 main ENDP	
 
-printspace PROC
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;	procedures	   ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+printspace PROC		; print the entire space, might want to add more or less
+	
+	;call setwindow
 	mov dl, 8
 	mov dh, 8
 	call printbar
@@ -48,7 +54,8 @@ printspace PROC
 	ret
 printspace ENDP
 
-printgrid PROC
+
+printgrid PROC		; print all of the slots, individually
 	
 	mov ecx, 6
 	gridheight:
@@ -73,11 +80,10 @@ printgrid PROC
 
 		loop gridheight
 
-
 	ret
 printgrid ENDP
 
-printbar PROC
+printbar PROC		; print the bar that will appear on either side of the grid
 	
 	mov esi, offset g_bar
 	mov ecx, lenbard 
@@ -95,7 +101,7 @@ printbar PROC
 	ret
 printbar ENDP
 
-printslot PROC
+printslot PROC		; procedure for each individual slot
 	
 	mov esi, offset g_tokenslot
 	mov ecx, lendown
@@ -113,7 +119,7 @@ printslot PROC
 	ret
 printslot ENDP
 
-printline PROC
+printline PROC		; print an individual line of characters, auxiliary procedure
 	
 	print: 
 
@@ -125,12 +131,13 @@ printline PROC
 	ret
 printline ENDP
 
-;setwindow PROC
+;setwindow PROC		; will want to implement, set window size
 
 	;ret
 ;setwindow ENDP
 
-clearregs PROC
+	; from push/pop functions
+clearregs PROC		; clear the general purpose registers
 
 	xor eax, eax
 	xor ebx, ebx
@@ -142,4 +149,4 @@ clearregs PROC
 	ret
 clearregs ENDP
 
-END main	; end of program!
+END main
