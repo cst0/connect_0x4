@@ -1,5 +1,9 @@
 TITLE DrawGrid					(DrawGrid.asm)
 
+	; Sir Gallo
+	; aka the other Nick
+	; haha you get it lets get on with the code
+	
 INCLUDE Irvine32.inc	
 
 .data
