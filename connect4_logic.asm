@@ -83,6 +83,193 @@ INCLUDE GraphWin.inc
 
 	pg_startingrow db 0
 	
+
+	animation_rows db 15
+	animation_columns db 30
+
+	caa_RawAnimSize db 225
+	caa_animation1Raw db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 2,1,5,1,2,1,1,1,1,1,1,1,1,1,1
+	db 1,2,2,2,2,1,1,1,1,1,1,1,1,1,1
+
+	caa_animation2Raw db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,5,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,2,3,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,2,2,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,2,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,2,2,1,1,1,1,1,1,1,1,1,1,1,1
+	db 2,2,2,1,1,1,1,1,1,1,1,1,1,1,1
+
+	caa_animation3Raw db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,5,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,3,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,2,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,2,1,1,1,1,1,1,1,1,1,1
+	db 1,1,2,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,2,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+
+	caa_animation4Raw db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,5,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,2,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,2,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,2,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,2,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+
+	caa_animation5Raw db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,5,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+
+	caa_animation6Raw db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,4,1,1,1,4,4,1,1,1,1
+	db 1,1,1,1,1,4,4,4,4,4,4,1,1,1,1
+	db 1,1,1,1,1,4,4,4,2,4,1,1,1,1,1
+	db 1,1,1,1,1,1,4,2,2,4,1,1,1,1,1
+	db 1,1,1,1,1,4,4,4,1,4,1,1,1,1,1
+	db 1,1,1,1,1,4,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+
+	caa_animation7Raw db 1,1,1,1,1,1,1,4,1,1,1,1,1,1,1
+	db 1,1,1,4,1,1,1,4,4,1,1,4,4,1,1
+	db 1,1,1,1,2,2,1,1,2,1,1,4,1,1,1
+	db 1,1,1,4,4,2,2,4,2,2,2,1,1,1,1
+	db 1,1,1,1,4,2,1,4,4,2,4,1,1,1,1
+	db 1,1,1,1,2,2,4,1,1,1,4,1,1,1,1
+	db 1,1,1,1,1,4,4,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+
+	caa_animation8Raw db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,2,1,1,1,1,1,1,1,1,4,1,1
+	db 1,1,4,2,1,1,1,1,1,1,1,2,4,4,1
+	db 1,1,1,1,1,1,2,4,4,2,2,2,1,1,1
+	db 1,1,4,4,2,2,1,4,1,1,1,4,4,1,1
+	db 1,1,4,1,1,2,2,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,2,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,4,4,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,4,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+
+	caa_animation9Raw db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,2,2,1,1,1,1,1,1,1
+	db 1,1,2,1,1,1,4,1,1,1,1,1,1,1,1
+	db 1,1,4,1,1,1,1,1,1,1,1,1,1,2,2
+	db 1,1,1,1,1,1,1,2,1,1,1,1,1,1,4
+	db 1,1,2,1,1,1,1,4,1,1,1,2,2,1,1
+	db 1,1,4,1,1,1,1,1,1,1,1,1,4,1,1
+	db 1,1,1,1,1,2,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,4,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+
+	caa_animation10Raw db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,4,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,4
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,4,1,1,1,1,1,1,1,1,1,4,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,4,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+
+	animation_1 db 450 DUP(1)
+	animation_2 db 450 DUP(1)
+	animation_3 db 450 DUP(1)
+	animation_4 db 450 DUP(1)
+	animation_5 db 450 DUP(1)
+	animation_6 db 450 DUP(1)
+	animation_7 db 450 DUP(1)
+	animation_8 db 450 DUP(1)
+	animation_9 db 450 DUP(1)
+	animation_10 db 450 DUP(1)
+
+	pf_int db 0
+	pf_rows db 0
+	pf_columns db 0
+	pf_x db 0
+	pf_y db 0
+
+	wf_counter db 0
+
+	animation_array dd 10 DUP(0)
+	animation_async db 3 DUP(0)
+
 	; The number of turns we've had. This way we can detect a stalemate, and
 	; we can tell whose turn it is.
 	g_turn db 0
@@ -199,13 +386,84 @@ main PROC
     jmp m_mainloop
 
     done:
+	push eax
+	mov al, g_playerwon
+	cmp al, 1
+	jne m_player2won
+	mov eax, red
+	jmp m_afterwon
+m_player2won:
+	mov eax, blue
+m_afterwon:
+	call settextcolor
 	mov edx, offset youwonstring
 	call writestring
+	mov eax, 1000
+	call Delay
+	call clrscr
+	call writestring
+	pop eax
+	Call winningfireworks
+
+
+
     mov eax, ConsoleMode
     invoke SetConsoleMode, hStdIn, eax
     call ReadChar
     invoke ExitProcess, 0
 main ENDP
+
+winningfireworks PROC
+	mov esi, offset animation_async
+	mov al, -6
+	mov [esi], al
+	inc esi
+	mov al, -3
+	mov [esi], al
+	inc esi
+	mov al, 0
+	mov [esi], al
+	mov esi, offset animation_async
+	mov ecx, lengthof animation_async
+	mov bl, 40
+	mov edx,0
+	mov dh, 5
+	mov dl, 0
+
+wf_morefireworks:
+	mov al, [esi]
+	cmp bl, 1
+	jg wf_printasusual
+	call clearfireworks
+	jmp wf_therest
+wf_printasusual:
+	call printfirework	
+wf_therest:
+	
+	inc al
+	cmp al, 10
+	jl wf_dontreset
+	mov al, 0
+wf_dontreset:
+	mov [esi], al
+	inc esi
+	add dl, 40
+		loop wf_morefireworks
+	mov eax, 100
+	call delay
+	mov esi, offset animation_async
+	mov ecx, lengthof animation_async
+	mov dl, 0
+
+	dec bl	
+	cmp bl, 0
+	jl wf_done
+	jmp wf_morefireworks
+wf_done:
+
+	ret
+winningfireworks ENDP
+
 
 ConvertRowCol PROC
     ;push ebx
@@ -910,6 +1168,70 @@ is_fillBarRight:
 	mov ecx, lengthof ca_barleftraw
 	Call changearray
 	
+	mov edx, offset animation_array
+
+	mov esi, offset caa_animation1Raw
+	mov edi, offset animation_1
+	mov [edx], edi
+	add edx, 4
+	mov ecx,0
+	mov cl, caa_rawanimsize
+	Call changearray
+	
+
+	mov esi, offset caa_animation2Raw
+	mov edi, offset animation_2
+	mov [edx], edi
+	add edx, 4
+	Call changearray
+
+	mov esi, offset caa_animation3Raw
+	mov edi, offset animation_3
+	mov [edx], edi
+	add edx, 4
+	Call changearray
+
+	mov esi, offset caa_animation4Raw
+	mov edi, offset animation_4
+	mov [edx], edi
+	add edx, 4
+	Call changearray
+
+	mov esi, offset caa_animation5Raw
+	mov edi, offset animation_5
+	mov [edx], edi
+	add edx, 4
+	Call changearray
+
+	mov esi, offset caa_animation6Raw
+	mov edi, offset animation_6
+	mov [edx], edi
+	add edx, 4
+	Call changearray
+
+	mov esi, offset caa_animation7Raw
+	mov edi, offset animation_7
+	mov [edx], edi
+	add edx, 4
+	Call changearray
+
+	mov esi, offset caa_animation8Raw
+	mov edi, offset animation_8
+	mov [edx], edi
+	add edx, 4
+	Call changearray
+
+	mov esi, offset caa_animation9Raw
+	mov edi, offset animation_9
+	mov [edx], edi
+	add edx, 4
+	Call changearray
+
+	mov esi, offset caa_animation10Raw
+	mov edi, offset animation_10
+	mov [edx], edi
+	Call changearray
+
 	pop edi
 	pop esi
 	pop edx
@@ -1331,10 +1653,10 @@ changeArray endp
 
 ClearSprite PROC
 	;dh has current row, dl has current column
-	;bh has num row, bl has numcolumn
+	;cl has num row, bl has numcolumn
 	push edx
-	push ebx
 	push ecx
+	push ebx
 	push eax
 	
 	mov bh, cl
@@ -1358,10 +1680,135 @@ cs_doneall:
 	mov edx,0
 	Call gotoxy
 	pop eax
-	pop ecx
 	pop ebx
+	pop ecx
 	pop edx
 	ret
 ClearSprite ENDP
+
+printFirework PROC
+	;al has the index of the firework animation
+	;bl has rows
+	;cl has columns
+	;dh has current row, dl has current column
+	cmp al, 0
+	jge pf_aboveone
+	ret
+pf_aboveone:
+	cmp al, 10
+	jl pf_start
+	ret
+pf_start:
+	push eax
+	push ebx
+	push ecx
+	push edx
+	push esi
+	
+	push bx
+	mov bh, 4
+	mul bh
+	mov esi, offset animation_array
+	and eax, 000000FFh
+	add esi, eax
+	mov esi, [esi]
+	pop bx
+	mov bl, animation_rows
+	mov cl, animation_columns
+	call clearfireworks
+	mov pf_x, dl
+	mov pf_y, dh
+	mov pf_int, cl
+	mov pf_rows, dl
+	mov pf_columns, dh
+pf_startall:
+	Call gotoXY
+	dec bl
+	cmp bl, 0
+	jl pf_endprint
+
+pf_printloop:
+	mov al, [esi]
+	inc dl
+	cmp al, 32
+	je pf_dontprint
+	jne pf_d1
+pf_d1:
+	cmp al, 176
+	jne pf_d2
+	push eax
+	mov eax, white
+	Call settextcolor
+	pop eax
+	jmp pf_print
+pf_d2:
+	cmp al, 177
+	jne pf_d3
+	push eax
+	mov eax, red
+	Call settextcolor
+	pop eax
+	jmp pf_print
+pf_d3:
+	cmp al, 178
+	jne pf_d4
+	push eax
+	mov al, g_playerwon
+	cmp al, 1
+	jne pf_player2
+	mov eax, red
+	jmp pf_afterplayer
+pf_player2:
+	mov eax, blue
+pf_afterplayer:
+	Call settextcolor
+	pop eax
+	jmp pf_print
+pf_d4:
+	cmp al, 219
+	jne pf_print
+	push eax
+	mov eax, gray
+	Call settextcolor
+	pop eax
+	jmp pf_print
+
+pf_print:
+	Call WriteChar
+pf_dontprint:
+	Call gotoxy
+	inc esi
+		loop pf_printloop
+	mov dl, pf_x
+	inc dh
+	call gotoxy
+	mov cl, pf_int
+	jmp pf_startall
+pf_endprint:
+	mov eax, gray
+	call settextcolor
+	mov edx,0
+	Call gotoXY
+	pop esi
+	pop edx
+	pop ecx
+	pop ebx
+	pop eax
+	
+	ret
+printFirework endp
+
+
+Clearfireworks PROC
+	;dh has current row, dl has current column
+	push ebx
+	push ecx
+	mov bl, animation_rows
+	mov cl, animation_columns
+	call clearsprite
+	pop ecx
+	pop ebx
+	ret
+Clearfireworks ENDP
 
 end main
