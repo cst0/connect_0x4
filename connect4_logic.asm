@@ -308,6 +308,7 @@ INCLUDE GraphWin.inc
 .code
 main PROC
 	; Set up the background stuff
+m_start:
 	call initsprites
 	call printbarright
 	call printbarleft
@@ -325,7 +326,12 @@ main PROC
 		mov al, g_playerwon
 		cmp al, 0
 		jne done
-
+		mov al, g_turn
+		cmp al, 42
+		jne m_dontreset
+		call Resetgrid
+		jmp m_start
+	m_dontreset:
         movzx  eax,InputRecord.EventType
         cmp eax, MOUSE_EVENT
 
@@ -472,6 +478,19 @@ wf_done:
 	ret
 winningfireworks ENDP
 
+
+resetgrid PROC
+	mov esi, offset mainarr
+	mov ecx, lengthof mainarr
+	mov ax, 0
+rg_loop:
+	mov [esi], ax
+	add esi, 2
+	loop rg_loop
+	mov g_turn, 0
+	call clrscr
+	ret
+resetgrid endp
 
 ConvertRowCol PROC
     ;push ebx
