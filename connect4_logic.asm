@@ -419,12 +419,13 @@ m_afterwon:
 	pop eax
 	Call winningfireworks
 
+	call resetgrid
+	jmp m_start
 
 
     mov eax, ConsoleMode
     invoke SetConsoleMode, hStdIn, eax
-    call ReadChar
-    invoke ExitProcess, 0
+	exit
 main ENDP
 
 winningfireworks PROC
@@ -488,6 +489,7 @@ rg_loop:
 	add esi, 2
 	loop rg_loop
 	mov g_turn, 0
+	mov g_playerwon, 0
 	call clrscr
 	ret
 resetgrid endp
@@ -1825,6 +1827,20 @@ pf_endprint:
 	ret
 printFirework endp
 
+
+Clearfireworks PROC
+	;dh has current row, dl has current column
+	push ebx
+	push ecx
+	mov bl, animation_rows
+	mov cl, animation_columns
+	call clearsprite
+	pop ecx
+	pop ebx
+	ret
+Clearfireworks ENDP
+
+end main
 
 Clearfireworks PROC
 	;dh has current row, dl has current column
