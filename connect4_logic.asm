@@ -267,6 +267,8 @@ INCLUDE GraphWin.inc
 
 	wf_counter db 0
 
+	m_hastokenplaced db 0
+
 	animation_array dd 10 DUP(0)
 	animation_async db 3 DUP(0)
 
@@ -330,8 +332,13 @@ main PROC
         jne endloop
         mov eax, InputRecord.MouseEvent.dwMousePosition
         test InputRecord.MouseEvent.dwButtonState, 1
-
+		
         jz endloop_justmove
+
+		cmp m_hastokenplaced, 1
+		je endloop
+
+		mov m_hastokenplaced, 1
 
 		mov g_point_x, al
 		mov g_point_y, ah
@@ -382,6 +389,7 @@ main PROC
 			mov dh, 0
 			call printtoken
 			mov edx, 0
+			mov m_hastokenplaced, 0
         endloop:
     jmp m_mainloop
 
