@@ -5,7 +5,11 @@ INCLUDE GraphWin.inc
 
 ;==================== DATA =======================
 .data
+	; The main array, with some buffer space so that we can use the same formula without
+	; checking if we're about to go out of bounds (we just keep it zero)
 	mainarr dw 164 DUP(0)
+
+	; Some global array information
 	g_xvals db 13
 	g_yvals db 12
 	g_xnbuf db 7
@@ -30,6 +34,7 @@ INCLUDE GraphWin.inc
 	g_last_edi dd 0
 	g_last_ebp dd 0
 
+	; Used when calculating positions about the just placed token.
 	calc_threezero dw 0
 	calc_twozero dw 0
 	calc_onezero dw 0
@@ -281,7 +286,7 @@ INCLUDE GraphWin.inc
 	g_turn db 0
 	g_playerwon db 0
 
-	;== Prompts and other text strings
+	; Prompts and other text strings
 	currentplayerstring db "The current player turn is ",0
 	printmatheader db "  0 1 2 3 4 5 6", 13, 10, 0
 	printmatbar db" ----------------", 13, 10, 0
@@ -292,6 +297,7 @@ INCLUDE GraphWin.inc
 	hStdIn    dd 0
     nRead     dd 0
 
+	; The input record, used when handling mouse events.
     _INPUT_RECORD STRUCT
         EventType   WORD ?
         WORD ?                    ; For alignment
@@ -313,53 +319,65 @@ INCLUDE GraphWin.inc
 main PROC
 	; Set up the background stuff
 m_start:
+	; Initialize sprites and draw the main board.
 	call initsprites
 	call printbarright
 	call printbarleft
 	call printgrid
 
-    invoke GetStdHandle,STD_INPUT_HANDLE
+	; Set ourselves up to handle mouse events
+    invoke GetStdHandle, STD_INPUT_HANDLE
     mov   hStdIn,eax
-
     invoke GetConsoleMode, hStdIn, ADDR ConsoleMode
-    mov eax, 0090h          ; ENABLE_MOUSE_INPUT | DISABLE_QUICK_EDIT_MODE | ENABLE_EXTENDED_FLAGS
+    mov eax, 0090h	; Sets the right flags for setconsolemode as per the examples
     invoke SetConsoleMode, hStdIn, eax
 
 	m_mainloop:
+		; Get the mouse input
         invoke ReadConsoleInput,hStdIn,ADDR InputRecord,1,ADDR nRead
+
+		; Has a player won now that we've started a new loop?
 		mov al, g_playerwon
 		cmp al, 0
 		jne done
+
+		; Has the last turn finishing meant that the tiles are now full?
 		mov al, g_turn
 		cmp al, 42
 		jne m_dontreset
 		call Resetgrid
 		jmp m_start
+
 	m_dontreset:
+		; If we're here, we're good to get inputs.
+		; Grab the event type first: we only care about the mouse.
         movzx  eax,InputRecord.EventType
         cmp eax, MOUSE_EVENT
-
         jne endloop
+
+		; So it's a mouse event. Store it, but was it a button press?
         mov eax, InputRecord.MouseEvent.dwMousePosition
         test InputRecord.MouseEvent.dwButtonState, 1
-		
         jz endloop_justmove
 
+		; Don't allow rapid-fire clicking by holding the button down
 		cmp m_hastokenplaced, 1
 		je endloop
-
 		mov m_hastokenplaced, 1
 
+		; Store the x and y vals we were given, and compute what column was clicked
 		mov g_point_x, al
 		mov g_point_y, ah
 		call calculatecolumn
 		cmp al, -1
 		je m_flagval
 
+		; If no issues have come up, place the coin
 		call placecoin
 		cmp al, -1
 		je m_flagval
 
+		; Draw that token in the right row/column
 		mov dl, g_coordy
 		mov dh, g_coordx
 		call convertrowcol
@@ -371,6 +389,7 @@ m_start:
 		jmp endloop
 
 		m_flagval:
+			; If we got here, it's because of an invalid click. Inform the user.
 			mov edx, offset invalidclick
 			call writestring
 			mov edx,0
@@ -384,15 +403,21 @@ m_start:
 			jmp endloop
 
 		endloop_justmove:
+			; If we got here, nothing's been clicked but the mouse moved. Let's move
+			; the token on the top of the board, following the cursor.
+
+			; If the mouse moved out of range, ignore it
 			cmp al, 12*7+8-6
 			jge endloop
 			cmp al, 12
 			jle endloop
 
+			; Erase the last token position
 			mov dl, m_last_tokenx
 			mov dh, 0
 			call cleartoken
 
+			; Draw the new token position
 			mov dl, al
 			sub dl, 5
 			mov m_last_tokenx, dl
@@ -403,30 +428,35 @@ m_start:
         endloop:
     jmp m_mainloop
 
+	; A player won! Inform the user.
     done:
 	push eax
+
+	; Set the text color to that of the winning player
 	mov al, g_playerwon
 	cmp al, 1
 	jne m_player2won
 	mov eax, red
 	jmp m_afterwon
-m_player2won:
-	mov eax, blue
-m_afterwon:
-	call settextcolor
-	mov edx, offset youwonstring
-	call writestring
-	mov eax, 1000
-	call Delay
-	call clrscr
-	call writestring
-	pop eax
-	Call winningfireworks
+
+	m_player2won:
+		mov eax, blue
+
+	; Show 'congrats' message, then fireworks
+	m_afterwon:
+		call settextcolor
+		mov edx, offset youwonstring
+		call writestring
+		mov eax, 1000
+		call Delay
+		call clrscr
+		call writestring
+		pop eax
+		Call winningfireworks
 
 	call resetgrid
 	jmp m_start
-
-
+	
     mov eax, ConsoleMode
     invoke SetConsoleMode, hStdIn, eax
 	exit
@@ -513,12 +543,7 @@ rg_loop:
 resetgrid endp
 
 ConvertRowCol PROC
-    ;push ebx
-    ;push ecx
-    ;push edx
-    ;mov edx, 0
-    ;push eax
-
+	; Convert the row/column of the mouseclick into a column we can deal with
 	mov al, g_coordy
 	mov bl, 12
 	mul bl
@@ -535,42 +560,6 @@ ConvertRowCol PROC
 
 	mov eax, ecx
 	ret
-    
-    ;max
-    push eax
-    mov eax, 0
-    mov al, g_slotrows
-    mov bl, 6
-	mul bl
-    mov ecx, eax    
-    pop eax
-    
-    mov ebx, 0
-    and eax, 0000ff00h
-    mov al, ah
-    mov ah, 0
-    mov bl, g_slotrows
-    mul bl
-    ; sub the max from the current value
-    sub cl, al
-    mov al, cl
-    mov dh, al
-
-    pop eax
-    push eax
-    and eax, 000000ffh
-    mov bl, g_slotcolumns
-    mul bl
-    add al, g_barcolumns
-    mov dl, al
-    pop eax
-    mov ax, dx
-
-    pop edx
-    pop ecx
-    pop ebx
-
-    ret
 ConvertRowCol ENDP
 
 ;=== For the sake of easy debug, print the current player
@@ -804,6 +793,13 @@ checkconnectstate endp
 docheckmath proc
 	mov calc_sum, 0
 
+	;=== What's happening here: 
+	; If the token in position 'threezero' is nonzero, it's now either 64 or 64,000.
+	; Next, it'll either be 32 or 32,000, and so on. This allows us to produce a single number that
+	; represents the player one and player two tokens in a line about the most recently placed token.
+	; The magic numbers here have been chosen so that we get a number that, in binary, may have
+	; four consequetive ones (after using mod/div to seperate out p1/p2).
+	; If we do, that's a connect four state.
 	movzx eax, calc_threezero
 	mov dx, 64
 	mul dx
@@ -1069,13 +1065,15 @@ binarycheck proc
 
 	; Are we checking for player one or two?
 	; If we're checking for player one, we should be using the remainder.
-	; If not, we should be using the quotient..
+	; If not, we should be using the quotient.
 	cmp cl, 1
 	je binarycheck_playerone
 	mov dx, ax
 
 	binarycheck_playerone:
-
+	
+	; These magic numbers have 4 consequetive ones. Note that a one represents a token
+	; owned by this player, 0 not. So, we check to see if the relevant bits are set high.
 	mov bx, dx
 	and bx, 15
 	cmp bx, 15
@@ -1104,6 +1102,7 @@ binarycheck proc
 		ret
 binarycheck endp
 
+;=== Calculate the column position for drawing
 calculatecolumn proc
 	cmp al, 8			; Account for the left side bar
 	jle calculatecolumn_ignore
