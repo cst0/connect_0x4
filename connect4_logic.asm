@@ -46,6 +46,7 @@ INCLUDE GraphWin.inc
 	g_coordx db 0
 	g_coordy db 0
 
+	; for the quarter slice sprites
 	cqs_slotslice db 4,3,3,3,4,1,3,1,1
 	cqs_tokenslice db 1,3,3,3,3,3,3,3,4 
 	cqs_slotslicex db 3
@@ -54,6 +55,7 @@ INCLUDE GraphWin.inc
 	cqs_columns db 0
 	cqs_slice dd 0
 
+	; for the ascii arrays to convert into the special character arrays
 	ca_slotraw db 36 DUP(0)
 	ca_tokenraw db 36 DUP(0)
 	ca_barleftRaw db 2,3,4,4
@@ -87,6 +89,7 @@ INCLUDE GraphWin.inc
 	animation_rows db 15
 	animation_columns db 30
 
+	; animation arrays
 	caa_RawAnimSize db 225
 	caa_animation1Raw db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
 	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
@@ -248,6 +251,7 @@ INCLUDE GraphWin.inc
 	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
 	db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
 
+	; ascii arays to hold animations after they are converted into special characters
 	animation_1 db 450 DUP(1)
 	animation_2 db 450 DUP(1)
 	animation_3 db 450 DUP(1)
@@ -429,6 +433,11 @@ m_afterwon:
 main ENDP
 
 winningfireworks PROC
+	push esi
+	push eax
+	push ebx
+	push edx
+	
 	mov esi, offset animation_async
 	mov al, -6
 	mov [esi], al
@@ -475,12 +484,18 @@ wf_dontreset:
 	jl wf_done
 	jmp wf_morefireworks
 wf_done:
-
+	pop edx
+	pop ebx
+	pop eax
+	pop esi
 	ret
 winningfireworks ENDP
 
 
 resetgrid PROC
+	push esi
+	push eax
+	push ecx
 	mov esi, offset mainarr
 	mov ecx, lengthof mainarr
 	mov ax, 0
@@ -491,6 +506,9 @@ rg_loop:
 	mov g_turn, 0
 	mov g_playerwon, 0
 	call clrscr
+	pop ecx
+	pop eax
+	pop esi
 	ret
 resetgrid endp
 
@@ -1624,6 +1642,7 @@ printSprite endp
 
 
 changeArray PROC
+	; converts numbers to ascii
 	;esi has source
 	;edi has destination
 	;ecx has size of array
